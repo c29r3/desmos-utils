@@ -10,8 +10,8 @@ USER=$(id -u -n)
 echo "===> Setting up environmental variables"
 
 if [ -z "$GOPATH" ]; then
-  echo "GOPATH environmental variable not set" >> ~/.profile
-  exit 0
+  echo "export GOPATH=$HOME/go" >> ~/.profile
+  source ~/.profile
 fi
 
 if [ -z "$GOBIN" ]; then
