@@ -1,7 +1,7 @@
 #!/bin/bash
 
-systemctl stop desmos.service
-systemctl disable desmos.service
+systemctl stop desmosd.service
+systemctl disable desmosd.service
 rm /etc/systemd/system/desmosd.service $HOME/desmos/*.zip
 
 rm -rf ~/desmos/desmos* $HOME/.desmosd
