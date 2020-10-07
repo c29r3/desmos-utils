@@ -40,6 +40,9 @@ sed -i 's|prof_laddr = "localhost:6060"|prof_laddr = "localhost:6081"|g' $HOME/.
 echo "Setting up persistent_peers in config file"
 sed -i "s|persistent_peers = \"\"|persistent_peers = \"$PERSISTENT_PEERS\"|g" $HOME/.desmosd/config/config.toml
 
+$BIN_PATH/desmoscli config trust-node true
+$BIN_PATH/desmoscli config keyring-backend test
+
 echo "Generating new key"
 echo "yes\n" | $BIN_PATH/desmoscli keys add desmos --keyring-backend test -o json &> $HOME/desmos/desmos_key.json
 
