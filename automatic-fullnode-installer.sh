@@ -37,7 +37,7 @@ sed -i "s|persistent_peers = \"\"|persistent_peers = \"$PERSISTENT_PEERS\"|g" $H
 echo "Generating new key"
 echo "yes\n" | $BIN_PATH/desmoscli keys add desmos --keyring-backend test -o json &> $HOME/desmos/desmos_key.json
 
-cat $HOME/desmos/desmos_key.json | -r jq .
+cat $HOME/desmos/desmos_key.json | jq -r .
 
 echo "------> Creating systemd unit desmos.service"
 tee /etc/systemd/system/desmosd.service > /dev/null <<EOF  
