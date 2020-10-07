@@ -28,7 +28,7 @@ echo "Extracting binary files"
 tar xf desmos-v0.12.3.tar.gz -C $HOME/go/bin
 
 echo "----> INIT CONFIG FILE"
-$BIN_PATH/desmosd init $MONIKER
+$BIN_PATH/desmosd init $MONIKER --chain-id morpheus-10000
 
 echo "-----> DOWNLOAD GENESIS FILE"
 curl -s https://raw.githubusercontent.com/desmos-labs/morpheus/master/genesis.json | jq . > $HOME/.desmosd/config/genesis.json
