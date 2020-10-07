@@ -53,9 +53,9 @@ cd ~
 # Prepare Cosmovisor
 echo "=====> Installing up Cosmovisor"
 wget -O desmosd-cosmovisor.zip http://ipfs.io/ipfs/QmfVPHGPEimn7BKQo5JNeyiPtjbkYWqfnEvUnqfAVQapUe
-sudo rm -r ~/.desmosd
+sudo rm -rf ~/.desmosd
 mkdir -p ~/.desmosd
-unzip desmosd-cosmovisor.zip -d ~/.desmosd &> /dev/null
+unzip desmosd-cosmovisor.zip -d ~/.desmosd
 
 echo "===> Completed Cosmovisor setup"
 echo ""
@@ -67,12 +67,12 @@ echo "===> Setting up Desmos"
 
 # Setup desmosd to use Cosmovisor
 echo 'alias desmosd=~/.desmosd/cosmovisor/current/bin/desmosd' >> ~/.bashrc
-echo 'desmoscli=~/.desmosd/cosmovisor/current/bin/desmoscli' >> ~/.bashrc
-. ~/.bashrc
+echo 'alias desmoscli=~/.desmosd/cosmovisor/current/bin/desmoscli' >> ~/.bashrc
+source ~/.bashrc
 
 # Setup the chain
 echo "=====> Initializing the chain"
-desmosd init $MONIKER
+$HOME/.desmosd/cosmovisor/genesis/bin/desmosd init $MONIKER
 
 # Download the genesis file
 echo "=====> Downloading the genesis file"
