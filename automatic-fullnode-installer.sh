@@ -2,13 +2,7 @@
 ## Variables
 ####################################
 MONIKER=$(cat ~/desmos/acc_name.txt)
-if [ -z "$MONIKER" ]; then
-  echo "Validator moniker not given. Please specify it as the first argument"
-  exit 0
-fi
-
 USER=$(id -u -n)
-
 
 ####################################
 ## Setup environmental variables
