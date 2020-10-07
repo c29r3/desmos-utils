@@ -106,5 +106,4 @@ echo "====> Starting Desmos service"
 sudo systemctl daemon-reload
 sudo systemctl enable desmosd
 sudo systemctl restart desmosd
-
-tail -100f /var/log/syslog
+sudo systemctl status desmosd
