@@ -23,7 +23,7 @@ curl -s https://gist.githubusercontent.com/c29r3/3130b5cd51c4a94f897cc58443890c2
 
 echo "Downloading binary files"
 mkdir -p $HOME/go/bin
-wget https://github.com/c29r3/desmos-utils/releases/download/v0.12.3/desmos-v0.12.3.tar.gz
+wget -q https://github.com/c29r3/desmos-utils/releases/download/v0.12.3/desmos-v0.12.3.tar.gz
 echo "Extracting binary files"
 tar xf desmos-v0.12.3.tar.gz -C $HOME/go/bin
 
