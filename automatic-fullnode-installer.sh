@@ -55,6 +55,7 @@ LimitNOFILE=150000
 [Install]
 WantedBy=multi-user.target
 EOF
+
 systemctl daemon-reload
 systemctl enable desmosd
 systemctl start desmosd
