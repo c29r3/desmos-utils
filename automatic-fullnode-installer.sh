@@ -1,109 +1,60 @@
-####################################
-## Variables
-####################################
+#!/bin/bash
+
+DESMOS_VERSION="v0.12.3"
 MONIKER=$(cat ~/desmos/acc_name.txt)
-USER=$(id -u -n)
+BIN_PATH="$HOME/go/bin"
+PERSISTENT_PEERS="40aa34719d0cd46a97d78dbcc798b3b2c51ce6e9@167.86.118.162:26656,4d9f7ac4b62b4545322dc39fc09bc2ab50e60590@78.47.152.196:26656,7fed5624ca577eb0333d3631b5e4f16ba1736979@54.180.98.75:26656,5077b7964d71d8758f7fc01cac01d0e2d55b8c18@18.196.238.210:26656,bdd98ec74fe56146f08e886239e52373f6821ce3@51.15.113.208:26656,e30d9bb713d17d1e4380b2e2a6df4b5c76c73eb1@34.212.106.82:26656"
 
-####################################
-## Setup environmental variables
-####################################
-echo "===> Setting up environmental variables"
+echo "-> INSTALL REQUIREMENTS"
+apt update \
+  && apt install -y zip unzip make gcc build-essential jq
 
-if [ -z "$GOPATH" ]; then
-  echo "export GOPATH=$HOME/go" >> ~/.profile
-  source ~/.profile
-fi
+echo "--> INSTALL GO"
+curl -s https://gist.githubusercontent.com/c29r3/3130b5cd51c4a94f897cc58443890c28/raw/4269d88af953d60507c54483fa09eeb26dd1f869/install_golang.sh | bash
 
-if [ -z "$GOBIN" ]; then
-    echo "export GOBIN=$GOPATH/bin" >> ~/.profile
-    source ~/.profile
-fi
+echo "---> COMPILE BINARY FILES"
+mkdir ~/desmos; \
+  cd ~/desmos; \
+  curl -s -LO https://github.com/desmos-labs/desmos/archive/$DESMOS_VERSION.zip > $DESMOS_VERSION.zip; \
+  unzip -q -o $DESMOS_VERSION.zip; \
+  cd desmos-*; \
+  make install; \
+  $BIN_PATH/desmosd version --long
 
-if [ -z "$DAEMON_NAME" ]; then
-    echo " " >> ~/.profile
-    echo "# Setup Cosmovisor" >> ~/.profile
-    echo "export DAEMON_NAME=desmosd" >> ~/.profile
-    echo "export DAEMON_HOME=$HOME/.desmosd" >> ~/.profile
-    echo "export DAEMON_RESTART_AFTER_UPGRADE=on" >> ~/.profile
-    source ~/.profile
-fi
+echo "----> INIT CONFIG FILE"
+$BIN_PATH/desmosd init $MONIKER
 
-echo "===> Completed environmental variables setup"
-echo ""
+echo "-----> DOWNLOAD GENESIS FILE"
+curl -s https://raw.githubusercontent.com/desmos-labs/morpheus/master/genesis.json | jq . > $HOME/.desmosd/config/genesis.json
 
-####################################
-## Setup Cosmovisor
-####################################
-echo "===> Setting up Cosmovisor"
 
-echo "=====> Downloading Cosmovisor"
-# Download Cosmovisor
-git clone https://github.com/cosmos/cosmos-sdk.git ~/cosmos
-cd ~/cosmos/cosmovisor
-make cosmovisor
-cp cosmovisor $GOBIN/cosmovisor
-cd ~
+echo "Change default prof_laddr 6060 --> 6081"
+sed -i 's|prof_laddr = "localhost:6060"|prof_laddr = "localhost:6081"|g' $HOME/.desmosd/config/config.toml
 
-# Prepare Cosmovisor
-echo "=====> Installing up Cosmovisor"
-wget -O desmosd-cosmovisor.zip https://github.com/desmos-labs/desmos/archive/v0.12.3.zip
-sudo rm -rf ~/.desmosd
-mkdir -p ~/.desmosd
-unzip desmosd-cosmovisor.zip -d ~/.desmosd
+echo "Setting up persistent_peers in config file"
+sed -i "s|persistent_peers = \"\"|persistent_peers = \"$PERSISTENT_PEERS\"|g" $HOME/.desmosd/config/config.toml
 
-echo "===> Completed Cosmovisor setup"
-echo ""
+echo "Generating new key"
+echo "yes\n" | $BIN_PATH/desmoscli keys add desmos --keyring-backend test -o json &> $HOME/desmos/desmos_key.json
 
-####################################
-## Setup Desmos
-####################################
-echo "===> Setting up Desmos"
+cat $HOME/desmos/desmos_key.json | -r jq .
 
-# Setup desmosd to use Cosmovisor
-echo 'alias desmosd=~/.desmosd/cosmovisor/current/bin/desmosd' >> ~/.bashrc
-echo 'alias desmoscli=~/.desmosd/cosmovisor/current/bin/desmoscli' >> ~/.bashrc
-source ~/.bashrc
-
-# Setup the chain
-echo "=====> Initializing the chain"
-$HOME/.desmosd/cosmovisor/genesis/bin/desmosd init $MONIKER
-
-# Download the genesis file
-echo "=====> Downloading the genesis file"
-curl -s https://raw.githubusercontent.com/desmos-labs/morpheus/master/genesis.json > $HOME/.desmosd/config/genesis.json
-
-# Setup the persistent peers
-echo "=====> Setting persistent peers"
-sed -i -e 's/persistent_peers = ""/persistent_peers = "7fed5624ca577eb0333d3631b5e4f16ba1736979@54.180.98.75:26656,5077b7964d71d8758f7fc01cac01d0e2d55b8c18@18.196.238.210:26656,bdd98ec74fe56146f08e886239e52373f6821ce3@51.15.113.208:26656,e30d9bb713d17d1e4380b2e2a6df4b5c76c73eb1@34.212.106.82:26656"/g' ~/.desmosd/config/config.toml
-
-echo "===> Completed Desmos setup"
-echo ""
-
-####################################
-## Setup the service
-####################################
-echo "===> Setting up Desmos service"
-
-FILE=/etc/systemd/system/desmosd.service
-sudo tee $FILE > /dev/null <<EOF
+echo "------> Creating systemd unit desmos.service"
+tee /etc/systemd/system/desmosd.service > /dev/null <<EOF  
 [Unit]
-Description=Desmos full node watched by Cosmovisor
+Description=Desmosd Full Node
 After=network-online.target
+
 [Service]
-User=$USER
-ExecStart=$GOBIN/cosmovisor start
+User=root
+ExecStart=/root/go/bin/desmosd start
 Restart=always
 RestartSec=3
-LimitNOFILE=4096
-Environment="DAEMON_NAME=desmosd"
-Environment="DAEMON_HOME=$HOME/.desmosd"
-Environment="DAEMON_RESTART_AFTER_UPGRADE=on"
+LimitNOFILE=150000
+
 [Install]
 WantedBy=multi-user.target
 EOF
-
-echo "====> Starting Desmos service"
-sudo systemctl daemon-reload
-sudo systemctl enable desmosd
-sudo systemctl restart desmosd
-sudo systemctl status desmosd
+systemctl enable desmosd
+systemctl start desmosd
+journalctl -u desmosd.service 
