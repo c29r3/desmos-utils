@@ -66,8 +66,9 @@ echo ""
 echo "===> Setting up Desmos"
 
 # Setup desmosd to use Cosmovisor
-alias desmosd=~/.desmosd/cosmovisor/current/bin/desmosd
-alias desmoscli=~/.desmosd/cosmovisor/current/bin/desmoscli
+echo 'alias desmosd=~/.desmosd/cosmovisor/current/bin/desmosd' >> ~/.bashrc
+echo 'desmoscli=~/.desmosd/cosmovisor/current/bin/desmoscli' >> ~/.bashrc
+. ~/.bashrc
 
 # Setup the chain
 echo "=====> Initializing the chain"
@@ -75,7 +76,7 @@ desmosd init $MONIKER
 
 # Download the genesis file
 echo "=====> Downloading the genesis file"
-curl https://raw.githubusercontent.com/desmos-labs/morpheus/master/genesis.json -o $HOME/.desmosd/config/genesis.json
+curl -s https://raw.githubusercontent.com/desmos-labs/morpheus/master/genesis.json > $HOME/.desmosd/config/genesis.json
 
 # Setup the persistent peers
 echo "=====> Setting persistent peers"
