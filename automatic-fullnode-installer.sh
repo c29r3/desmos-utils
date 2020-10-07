@@ -46,7 +46,7 @@ cd ~
 
 # Prepare Cosmovisor
 echo "=====> Installing up Cosmovisor"
-wget -O desmosd-cosmovisor.zip http://ipfs.io/ipfs/QmfVPHGPEimn7BKQo5JNeyiPtjbkYWqfnEvUnqfAVQapUe
+wget -O desmosd-cosmovisor.zip https://github.com/desmos-labs/desmos/archive/v0.12.3.zip
 sudo rm -rf ~/.desmosd
 mkdir -p ~/.desmosd
 unzip desmosd-cosmovisor.zip -d ~/.desmosd
