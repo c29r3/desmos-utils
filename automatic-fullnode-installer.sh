@@ -63,4 +63,3 @@ EOF
 systemctl daemon-reload
 systemctl enable desmosd
 systemctl start desmosd
-systemctl status desmosd.service 
