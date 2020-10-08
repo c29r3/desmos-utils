@@ -1,5 +1,5 @@
 desmoscli tx staking create-validator \
-  --amount=1000000udaric \
+  --amount=3000000udaric \
   --pubkey=$(desmosd tendermint show-validator) \
   --moniker=$(cat /root/desmos/acc_name.txt) \
   --chain-id=morpheus-10000 \
