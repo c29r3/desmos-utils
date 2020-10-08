@@ -15,7 +15,7 @@ do
     echo CURRENT BALANCE IS: $BALANCE
     REWARD=$(( $BALANCE - 2000000 ))
 
-    if (( $BALANCE >  100000000 )); then
+    if (( $BALANCE >  10000000 )); then
         echo "Let's delegate $REWARD of REWARD tokens to $SELF_ADDR"
         # delegate balance
         $BIN_FILE tx staking delegate $OPERATOR "$REWARD"$DENOM --chain-id $CHAIN_ID --gas-adjustment 1.5 --gas auto --gas-prices "0.025"$DENOM --from $WALLET_NAME -y
