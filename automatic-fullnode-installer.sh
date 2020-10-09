@@ -7,25 +7,25 @@ PERSISTENT_PEERS="3a59864ba9b6855f403db18525a031f168c9d143@62.171.153.205:26656,
 
 echo "-> INSTALL REQUIREMENTS"
 apt update \
-  && apt install -y zip unzip make gcc build-essential jq
+  && apt install -y zip git unzip make gcc build-essential jq
 
 echo "--> INSTALL GO"
 curl -s https://gist.githubusercontent.com/c29r3/3130b5cd51c4a94f897cc58443890c28/raw/4269d88af953d60507c54483fa09eeb26dd1f869/install_golang.sh | bash
 
-# echo "---> COMPILE BINARY FILES"
-# mkdir ~/desmos; \
-#   cd ~/desmos; \
-#   curl -s -LO https://github.com/desmos-labs/desmos/archive/$DESMOS_VERSION.zip > $DESMOS_VERSION.zip; \
-#   unzip -q -o $DESMOS_VERSION.zip; \
-#   cd desmos-*; \
-#   make install; \
-#   $BIN_PATH/desmosd version --long
+echo "---> COMPILE BINARY FILES"
+mkdir ~/desmos; \
+  cd ~/desmos; \
+  git clone https://github.com/desmos-labs/desmos.git; \
+  cd desmos; \
+  make build; \
+  cp $HOME/desmos/desmos/build/* $HOME/go/bin/
+  $BIN_PATH/desmosd version --long
 
-echo "Downloading binary files"
-mkdir -p $HOME/go/bin
-wget -q https://github.com/c29r3/desmos-utils/releases/download/v0.12.3/desmos-v0.12.3.tar.gz
-echo "Extracting binary files"
-tar xf desmos-v0.12.3.tar.gz -C $HOME/go/bin
+# echo "Downloading binary files"
+# mkdir -p $HOME/go/bin
+# wget -q https://github.com/c29r3/desmos-utils/releases/download/v0.12.3/desmos-v0.12.3.tar.gz
+# echo "Extracting binary files"
+# tar xf desmos-v0.12.3.tar.gz -C $HOME/go/bin
 
 echo "----> INIT CONFIG FILE"
 $BIN_PATH/desmosd init $MONIKER --chain-id morpheus-10000
