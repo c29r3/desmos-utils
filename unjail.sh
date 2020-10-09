@@ -10,7 +10,7 @@ do
     echo "Status $STATUS"
     if [[ $STATUS != "2" ]]; then
         echo "UNJAIL"
-        $DESMOSCLI tx slashing unjail --from $WALLET_NAME --gas-adjustment="1.5" --gas="auto" --gas-prices="0.025udaric" --chain-id=morpheus-10000 -y
+        $DESMOSCLI tx slashing unjail --from $WALLET_NAME --gas-adjustment="1.5" -gas="200000" --gas-prices="0.01udaric" --chain-id=morpheus-10000 -y
     fi
     sleep 300
 done
