@@ -18,7 +18,7 @@ do
     if (( $BALANCE >  8999999 )); then
         echo "Let's delegate $REWARD of REWARD tokens to $SELF_ADDR"
         # delegate balance
-        $BIN_FILE tx staking delegate $OPERATOR "$REWARD"$DENOM --chain-id $CHAIN_ID --gas-adjustment 1.5 --gas auto --gas-prices "0.025"$DENOM --from $WALLET_NAME -y
+        $BIN_FILE tx staking delegate $OPERATOR "$REWARD"$DENOM --chain-id $CHAIN_ID --gas-adjustment 1.5 --gas="200000" --gas-prices "0.01"$DENOM --from $WALLET_NAME -y
 
     else
         echo "Reward is $REWARD"
