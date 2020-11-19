@@ -3,7 +3,7 @@
 BIN_FILE="/root/go/bin/desmoscli"
 WALLET_NAME="desmos"
 CHAIN_ID="morpheus-10000"
-SELF_ADDR=$($BIN_FILE keys list | jq -r .[0].address)
+SELF_ADDR=$($BIN_FILE keys list | grep address | awk '{print $2}')
 DENOM="udaric"
 OPERATOR=$($BIN_FILE q staking delegations --chain-id $CHAIN_ID $SELF_ADDR | jq -r .[].validator_address)
 
