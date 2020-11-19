@@ -16,6 +16,7 @@ echo "---> COMPILE BINARY FILES"
 mkdir ~/desmos; \
   cd ~/desmos; \
   git clone https://github.com/desmos-labs/desmos.git; \
+  git checkout tags/$DESMOS_VERSION; \
   cd desmos; \
   make build; \
   cp $HOME/desmos/desmos/build/* $HOME/go/bin/
