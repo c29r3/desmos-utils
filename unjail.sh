@@ -5,7 +5,7 @@ DESMOSCLI="/root/go/bin/desmoscli"
 
 while true; 
 do 
-    OPERATOR=$($DESMOSCLI q staking delegations $($DESMOSCLI keys list | jq -r .[0].address) | jq -r .[].validator_address)
+    OPERATOR=$($BIN_FILE q staking delegations -o json --chain-id $CHAIN_ID $SELF_ADDR | jq -r .[].validator_address)
     STATUS=$($DESMOSCLI query staking validator $OPERATOR --trust-node -o json | jq -r .status)
     echo "Status $STATUS"
     if [[ $STATUS != "2" ]]; then
