@@ -1,29 +1,35 @@
 #!/bin/bash
 
-BIN_FILE="/root/go/bin/desmoscli"
-RPC_PORT="26657"
-WALLET_NAME="desmos"
-CHAIN_ID="morpheus-10000"
-SELF_ADDR=$($BIN_FILE keys list -o json | jq -r '.[] | select(.name=="desmos") | .address')
-DENOM="udaric"
-OPERATOR=$($BIN_FILE q staking delegations -o json --chain-id $CHAIN_ID $SELF_ADDR | jq -r .[].validator_address)
+SELF_ADDR="ADDR"
+OPERATOR="desmosvaloper...."
+WALLET_NAME="wallet_name"
+CHAIN_ID="desmos-mainnet"
+WALLET_PWD=""
+BIN_FILE="$HOME/go/bin/desmos"
+TOKEN="udsm"
+RPC="http://135.181.60.250:26557"
 
-echo -e "Current address: $SELF_ADDR\nCurrent operator address: $OPERATOR"
 
-while true;
-do
-    BALANCE=$($BIN_FILE query account $SELF_ADDR -o json | jq -r .value.coins[0].amount)
+while true; do
+    # withdraw reward
+    echo -e "$WALLET_PWD\n$WALLET_PWD\n" | $BIN_FILE tx distribution withdraw-rewards $OPERATOR --commission --fees 5000$TOKEN --chain-id $CHAIN_ID --from $WALLET_NAME --node ${RPC} -y
+
+    sleep 10
+
+    # check current balance
+    BALANCE=$($BIN_FILE q bank balances $SELF_ADDR -o json --node ${RPC} | jq -r .balances[0].amount)
     echo CURRENT BALANCE IS: $BALANCE
-    REWARD=$(( $BALANCE - 333333 ))
 
-    if (( $BALANCE >  899999 )); then
-        echo "Let's delegate $REWARD of REWARD tokens to $SELF_ADDR"
+    RESTAKE_AMOUNT=$(( $BALANCE - 5000000 ))
+
+    if (( $RESTAKE_AMOUNT >=  25000000 ));then
+        echo "Let's delegate $RESTAKE_AMOUNT of REWARD tokens to $SELF_ADDR"
         # delegate balance
-        $BIN_FILE tx staking delegate $OPERATOR "$REWARD"$DENOM --chain-id $CHAIN_ID --node http://localhost:$RPC_PORT --gas-adjustment 1.5 --gas="200000" --fees 333333$DENOM --from $SELF_ADDR -y
+        echo -e "$WALLET_PWD\n$WALLET_PWD\n" | $BIN_FILE tx staking delegate $OPERATOR "$RESTAKE_AMOUNT"$TOKEN --fees 5000$TOKEN --chain-id $CHAIN_ID --from $WALLET_NAME --node ${RPC} -y
 
     else
-        echo "Reward is $REWARD"
+        echo "Reward is $RESTAKE_AMOUNT"
     fi
-    sleep 500
+    echo "DONE"
+    sleep 10800
 done
-echo "DONE"
